@@ -1,0 +1,14 @@
+# Perfil de pruebas: base en memoria.
+#
+# El application.yml principal fija MySQLDialect y ddl-auto=update, que contra H2 ni siquiera
+# crea las tablas de secuencia. Aqui se sobrescriben las tres propiedades que importan.
+spring:
+  datasource:
+    url: jdbc:h2:mem:catalog;DB_CLOSE_DELAY=-1;MODE=LEGACY
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
