@@ -2,6 +2,7 @@ package cl.andesstay.catalog.web;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,6 +46,29 @@ public class ManejadorDeErrores {
     @ExceptionHandler(OptimisticLockingFailureException.class)
     public ResponseEntity<Map<String, Object>> conflictoDeConcurrencia(OptimisticLockingFailureException e) {
         log.warn("[Disponibilidad] conflicto de bloqueo optimista: {}", e.getMessage());
+        return conflicto();
+    }
+
+    /**
+     * 409 · La otra carrera posible: dos operaciones simultáneas intentan crear la fila del
+     * calendario del mismo día y una choca con la restricción única de `(unitId, fecha)`.
+     *
+     * Ocurre solo la primera vez que se reserva una fecha, porque las filas se crean de forma
+     * perezosa, pero ocurre: lo reproduce `HoldConcurrenteTest`. Sin este manejador salía como un
+     * 500, cuando para quien llama es exactamente lo mismo que perder el bloqueo optimista.
+     */
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, Object>> conflictoDeIntegridad(DataIntegrityViolationException e) {
+        log.warn("[Disponibilidad] conflicto de integridad, probablemente dos altas del mismo día: {}",
+                e.getMostSpecificCause().getMessage());
+        return conflicto();
+    }
+
+    /**
+     * Las dos carreras se responden igual a propósito: desde fuera, la plaza ya no está.
+     * Distinguirlas solo trasladaría al cliente un detalle de implementación.
+     */
+    private ResponseEntity<Map<String, Object>> conflicto() {
         Map<String, Object> cuerpo = new LinkedHashMap<>();
         cuerpo.put("error", "SIN_DISPONIBILIDAD");
         cuerpo.put("detalle", "La plaza la tomó otra operación simultánea.");
