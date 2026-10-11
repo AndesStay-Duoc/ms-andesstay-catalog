@@ -1,6 +1,7 @@
 package cl.andesstay.catalog.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -14,6 +15,18 @@ public class Unit {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "unit_seq")
     @SequenceGenerator(name = "unit_seq", sequenceName = "SEQ_CATALOG_UNITS", allocationSize = 1)
     private Long id;
+
+    /**
+     * Establecimiento de la red al que pertenece la unidad.
+     *
+     * La columna admite nulos a proposito, aunque el campo sea obligatorio al crear o editar: las
+     * unidades que existian antes de que apareciera el hostal no lo traen, y marcar la columna como
+     * NOT NULL sobre una tabla con filas habria roto el arranque. La validacion esta en
+     * @NotNull, que solo se aplica a los cuerpos de las peticiones.
+     */
+    @NotNull(message = "La unidad tiene que pertenecer a un hostal")
+    @Column(name = "HOSTAL_ID")
+    private Long hostalId;
 
     @Column(name = "NAME", nullable = false, length = 150)
     private String name;
