@@ -1,5 +1,7 @@
 package cl.andesstay.catalog.controller;
 
+import cl.andesstay.catalog.ApiPaths;
+
 import cl.andesstay.catalog.domain.Availability;
 import cl.andesstay.catalog.domain.Hold;
 import cl.andesstay.catalog.domain.Unit;
@@ -27,7 +29,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/catalog")
+@RequestMapping(ApiPaths.CATALOG)
 @RequiredArgsConstructor
 public class CatalogController {
 

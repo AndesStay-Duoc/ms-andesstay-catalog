@@ -1,5 +1,7 @@
 package cl.andesstay.catalog.controller;
 
+import cl.andesstay.catalog.ApiPaths;
+
 import cl.andesstay.catalog.domain.Hostal;
 import cl.andesstay.catalog.domain.Unit;
 import cl.andesstay.catalog.repository.HostalRepository;
@@ -28,7 +30,7 @@ import java.util.List;
  * puede hacer cualquier rol que vaya a elegir una unidad, incluido el huésped.
  */
 @RestController
-@RequestMapping("/api/catalog/hostales")
+@RequestMapping(ApiPaths.HOSTALES)
 @RequiredArgsConstructor
 public class HostalController {
 
